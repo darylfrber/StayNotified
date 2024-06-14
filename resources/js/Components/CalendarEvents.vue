@@ -5,19 +5,19 @@
             <form @submit.prevent="submitEvent">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                    <input type="date" v-model="event.date" class="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                    <input type="date" v-model="form.date" class="w-full px-3 py-2 border border-gray-300 rounded-md" required />
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Time</label>
-                    <input type="time" v-model="event.time" class="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                    <input type="time" v-model="form.time" class="w-full px-3 py-2 border border-gray-300 rounded-md" required />
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                    <input type="text" v-model="event.title" class="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                    <input type="text" v-model="form.title" class="w-full px-3 py-2 border border-gray-300 rounded-md" required />
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Confirmed</label>
-                    <input type="checkbox" v-model="event.confirmed" />
+                    <input type="checkbox" v-model="form.confirmed" />
                 </div>
                 <div class="flex justify-end">
                     <button type="button" @click="closeModal" class="px-4 py-2 bg-gray-500 text-white rounded-md mr-2">Cancel</button>
@@ -29,44 +29,75 @@
             </div>
         </div>
     </div>
+    <Notification :message="notificationMessage" :type="notificationType" />
 </template>
 
-<script>
-export default {
-    props: {
-        isOpen: {
-            type: Boolean,
-            required: true
-        },
-        isEditMode: {
-            type: Boolean,
-            default: false
-        },
-        event: {
-            type: Object,
-            default: () => ({
-                id: null,
-                date: '',
-                time: '',
-                title: '',
-                confirmed: false
-            })
-        }
-    },
-    methods: {
-        closeModal() {
-            this.$emit('close');
-        },
-        submitEvent() {
-            if (this.isEditMode) {
-                this.$emit('update-event', {...this.event});
-            } else {
-                this.$emit('add-event', {...this.event});
+<script setup>
+import { reactive, watch, ref } from 'vue';
+import { router } from '@inertiajs/vue3';
+import Notification from './Notification.vue';
+
+const form = reactive({
+    id: null,
+    date: '',
+    time: '',
+    title: '',
+    confirmed: false,
+});
+
+const notificationMessage = ref('');
+const notificationType = ref('success');
+
+function showNotification(message, type) {
+    notificationMessage.value = '';
+    setTimeout(() => {
+        notificationMessage.value = message;
+        notificationType.value = type;
+    }, 100); // Delay to ensure the transition works
+}
+
+function submitEvent() {
+    if (form.id) {
+        router.put(`/events/${form.id}`, form, {
+            onSuccess: (page) => {
+                emit('event-updated', page.props.events);
+                showNotification('Event updated successfully!', 'success');
             }
-        },
-        deleteEvent() {
-            this.$emit('delete-event', {...this.event});
-        }
+        });
+    } else {
+        router.post('/events', form, {
+            onSuccess: (page) => {
+                emit('event-updated', page.props.events);
+                showNotification('Event added successfully!', 'success');
+            }
+        });
     }
-};
+    closeModal();
+}
+
+function deleteEvent() {
+    router.delete(`/events/${form.id}`, {
+        onSuccess: (page) => {
+            emit('event-updated', page.props.events);
+            showNotification('Event deleted successfully!', 'error');
+        }
+    });
+    closeModal();
+}
+
+const props = defineProps({
+    isOpen: Boolean,
+    isEditMode: Boolean,
+    event: Object,
+});
+
+const emit = defineEmits(['close', 'event-updated']);
+
+watch(() => props.event, (newEvent) => {
+    Object.assign(form, newEvent);
+});
+
+function closeModal() {
+    emit('close');
+}
 </script>

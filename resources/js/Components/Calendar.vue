@@ -1,5 +1,5 @@
 <template>
-    <div class="text-gray-700 h-full">
+    <div class="text-gray-700 h-full" ref="calendarContainer">
         <div class="flex flex-col h-full">
             <div class="flex items-center mt-4">
                 <div class="flex ml-6">
@@ -52,21 +52,18 @@
             :isOpen="isModalOpen"
             :isEditMode="isEditMode"
             :event="currentEvent"
-            @add-event="addEvent"
-            @update-event="updateEvent"
-            @delete-event="deleteEvent"
             @close="closeModal"
+            @event-updated="refreshEvents"
         />
     </div>
 </template>
+
 <script setup>
 import { computed, ref } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import { Inertia } from '@inertiajs/inertia';
 import CalendarEvents from './CalendarEvents.vue';
 
 const { props } = usePage();
-
 const events = ref(props.events || []);
 const localEvents = ref([...events.value]);
 const currentYear = ref(new Date().getFullYear());
@@ -80,6 +77,7 @@ const currentEvent = ref({
     title: '',
     confirmed: false,
 });
+const calendarContainer = ref(null);
 
 function formatDate(date) {
     const d = new Date(date);
@@ -123,36 +121,6 @@ function closeModal() {
     isModalOpen.value = false;
 }
 
-function addEvent(event) {
-    Inertia.post('/events', event, {
-        onSuccess: () => {
-            localEvents.value.push(event);
-            closeModal();
-        }
-    });
-}
-
-function updateEvent(event) {
-    Inertia.put(`/events/${event.id}`, event, {
-        onSuccess: () => {
-            const index = localEvents.value.findIndex(e => e.id === event.id);
-            if (index !== -1) {
-                localEvents.value.splice(index, 1, event);
-            }
-            closeModal();
-        }
-    });
-}
-
-function deleteEvent(event) {
-    Inertia.delete(`/events/${event.id}`, {
-        onSuccess: () => {
-            localEvents.value = localEvents.value.filter(e => e.id !== event.id);
-            closeModal();
-        }
-    });
-}
-
 function editEvent(event) {
     currentEvent.value = { ...event };
     isEditMode.value = true;
@@ -173,7 +141,7 @@ const daysInMonth = computed(() => {
 
     while (date.getMonth() === month) {
         const dayEvents = localEvents.value.filter(event => event.date === formatDate(date));
-        days.push({ date: formatDate(date), events: dayEvents });
+        days.push({date: formatDate(date), events: dayEvents});
         date.setDate(date.getDate() + 1);
     }
 
@@ -181,6 +149,11 @@ const daysInMonth = computed(() => {
 });
 
 const currentMonthName = computed(() => {
-    return new Date(currentYear.value, currentMonth.value).toLocaleString('default', { month: 'long' });
+    return new Date(currentYear.value, currentMonth.value).toLocaleString('default', {month: 'long'});
 });
+
+function refreshEvents(updatedEvents) {
+    localEvents.value = updatedEvents;
+}
+
 </script>
