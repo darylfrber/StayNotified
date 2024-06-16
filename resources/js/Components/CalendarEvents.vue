@@ -29,13 +29,12 @@
             </div>
         </div>
     </div>
-    <Notification :message="notificationMessage" :type="notificationType" />
 </template>
 
 <script setup>
-import { reactive, watch, ref } from 'vue';
-import { router } from '@inertiajs/vue3';
-import Notification from './Notification.vue';
+import {reactive, watch} from 'vue';
+import {router} from '@inertiajs/vue3';
+import {useNotification} from '@/composables/useNotification';
 
 const form = reactive({
     id: null,
@@ -45,16 +44,7 @@ const form = reactive({
     confirmed: false,
 });
 
-const notificationMessage = ref('');
-const notificationType = ref('success');
-
-function showNotification(message, type) {
-    notificationMessage.value = '';
-    setTimeout(() => {
-        notificationMessage.value = message;
-        notificationType.value = type;
-    }, 100); // Delay to ensure the transition works
-}
+const {showNotification} = useNotification();
 
 function submitEvent() {
     if (form.id) {
