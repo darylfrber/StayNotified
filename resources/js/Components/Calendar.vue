@@ -26,14 +26,15 @@
                 <div class="pl-1 text-sm">Sun</div>
             </div>
             <div class="grid flex-grow w-full h-full grid-cols-7 grid-rows-6 gap-px pt-px mt-1 bg-gray-200">
-                <div v-for="day in daysInMonth" :key="day.date" class="relative flex flex-col bg-white group h-20">
+                <div v-for="day in daysInMonth" :key="day.date" :class="['relative flex flex-col group h-20', { 'bg-white': !day.outOfMonth, 'bg-gray-100': day.outOfMonth }]">
                     <div class="relative self-start flex justify-center items-center">
                         <span :class="['m-1 text-xs font-bold flex items-center justify-center', { 'bg-blue-500 text-white border-blue-500 border-2 rounded-full': isToday(day.date) }]" style="width: 24px; height: 24px;">
                             {{ new Date(day.date).getDate() }}
                         </span>
+                        <span v-if="isFirstDayOfMonth(day.date)" class="ml-2 text-xs font-light">{{ getMonthName(day.date) }}</span>
                     </div>
                     <div class="flex flex-col overflow-auto">
-                        <button v-for="event in day.events" :key="event.id" @click="editEvent(event)" class="flex items-center flex-shrink-0 h-5 px-1 text-xs hover:bg-gray-200">
+                        <button v-for="event in day.events.sort((a, b) => a.time.localeCompare(b.time))" :key="event.id" @click="editEvent(event)" class="flex items-center flex-shrink-0 h-5 px-1 text-xs hover:bg-gray-200">
                             <span :class="['flex-shrink-0 w-2 h-2 rounded-full', event.confirmed ? 'bg-blue-500' : 'border border-blue-500']"></span>
                             <span class="ml-2 font-light leading-none">{{ event.time }}</span>
                             <span class="ml-2 font-medium leading-none truncate">{{ event.title }}</span>
@@ -59,7 +60,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import CalendarEvents from './CalendarEvents.vue';
 
@@ -77,7 +78,6 @@ const currentEvent = ref({
     title: '',
     confirmed: false,
 });
-const calendarContainer = ref(null);
 
 function formatDate(date) {
     const d = new Date(date);
@@ -106,6 +106,7 @@ function nextMonth() {
 }
 
 function openAddEventModal(date) {
+    saveScrollPosition();
     currentEvent.value = {
         id: null,
         date: date,
@@ -122,9 +123,21 @@ function closeModal() {
 }
 
 function editEvent(event) {
+    saveScrollPosition();
     currentEvent.value = { ...event };
     isEditMode.value = true;
     isModalOpen.value = true;
+}
+
+function saveScrollPosition() {
+    sessionStorage.setItem('scrollPosition', window.scrollY);
+}
+
+function restoreScrollPosition() {
+    const scrollPosition = sessionStorage.getItem('scrollPosition');
+    if (scrollPosition !== null) {
+        window.scrollTo(0, parseInt(scrollPosition));
+    }
 }
 
 function isToday(date) {
@@ -133,27 +146,70 @@ function isToday(date) {
     return today.toDateString() === d.toDateString();
 }
 
+function isFirstDayOfMonth(date) {
+    return new Date(date).getDate() === 1;
+}
+
+function getMonthName(date) {
+    return new Date(date).toLocaleString('default', { month: 'short' });
+}
+
 const daysInMonth = computed(() => {
     const year = currentYear.value;
     const month = currentMonth.value;
     const days = [];
     const date = new Date(year, month, 1);
 
+    // Get the first day of the month (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+    const firstDay = new Date(year, month, 1).getDay();
+
+    // Fill in the days before the start of the month
+    const previousMonthDays = firstDay === 0 ? 6 : firstDay - 1;
+    for (let i = previousMonthDays; i > 0; i--) {
+        const prevDate = new Date(year, month, 1);
+        prevDate.setDate(prevDate.getDate() - i);
+        const dayEvents = localEvents.value.filter(event => event.date === formatDate(prevDate));
+        days.push({ date: formatDate(prevDate), events: dayEvents, outOfMonth: true });
+    }
+
+    // Fill in the days of the current month
     while (date.getMonth() === month) {
         const dayEvents = localEvents.value.filter(event => event.date === formatDate(date));
-        days.push({date: formatDate(date), events: dayEvents});
+        days.push({ date: formatDate(date), events: dayEvents });
         date.setDate(date.getDate() + 1);
+    }
+
+    // Fill in the days after the end of the month
+    const remainingDays = 42 - days.length;
+    for (let i = 0; i < remainingDays; i++) {
+        const nextDate = new Date(year, month + 1, 1);
+        nextDate.setDate(nextDate.getDate() + i);
+        const dayEvents = localEvents.value.filter(event => event.date === formatDate(nextDate));
+        days.push({ date: formatDate(nextDate), events: dayEvents, outOfMonth: true });
     }
 
     return days;
 });
 
 const currentMonthName = computed(() => {
-    return new Date(currentYear.value, currentMonth.value).toLocaleString('default', {month: 'long'});
+    return new Date(currentYear.value, currentMonth.value).toLocaleString('default', { month: 'long' });
 });
 
 function refreshEvents(updatedEvents) {
     localEvents.value = updatedEvents;
+    restoreScrollPosition();
 }
 
+watch(isModalOpen, (newVal) => {
+    if (!newVal) {
+        restoreScrollPosition();
+    }
+});
+
 </script>
+
+<style scoped>
+.bg-gray-100 {
+    color: #ccc;
+}
+</style>

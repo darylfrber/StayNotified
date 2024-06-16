@@ -62,6 +62,7 @@ function submitEvent() {
             onSuccess: (page) => {
                 emit('event-updated', page.props.events);
                 showNotification('Event updated successfully!', 'success');
+                closeModal();
             }
         });
     } else {
@@ -69,10 +70,10 @@ function submitEvent() {
             onSuccess: (page) => {
                 emit('event-updated', page.props.events);
                 showNotification('Event added successfully!', 'success');
+                closeModal();
             }
         });
     }
-    closeModal();
 }
 
 function deleteEvent() {
@@ -80,9 +81,9 @@ function deleteEvent() {
         onSuccess: (page) => {
             emit('event-updated', page.props.events);
             showNotification('Event deleted successfully!', 'error');
+            closeModal();
         }
     });
-    closeModal();
 }
 
 const props = defineProps({
