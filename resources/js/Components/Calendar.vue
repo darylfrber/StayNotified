@@ -31,7 +31,7 @@
                         <span :class="['m-1 text-xs font-bold flex items-center justify-center', { 'bg-blue-500 text-white border-blue-500 border-2 rounded-full': isToday(day.date) }]" style="width: 24px; height: 24px;">
                             {{ new Date(day.date).getDate() }}
                         </span>
-                        <span v-if="isFirstDayOfMonth(day.date)" class="ml-2 text-xs font-light">{{ getMonthName(day.date) }}</span>
+                        <span v-if="isFirstDayOfMonth(day.date)" class="text-xs font-light">{{ getMonthName(day.date) }}</span>
                     </div>
                     <div class="flex flex-col overflow-auto">
                         <button v-for="event in day.events.sort((a, b) => a.time.localeCompare(b.time))" :key="event.id" @click="editEvent(event)" class="flex items-center flex-shrink-0 h-5 px-1 text-xs hover:bg-gray-200">
