@@ -28,19 +28,31 @@
             <div class="grid flex-grow w-full h-full grid-cols-7 grid-rows-6 gap-px pt-px mt-1 bg-gray-200">
                 <div v-for="day in daysInMonth" :key="day.date" :class="['relative flex flex-col group h-20', { 'bg-white': !day.outOfMonth, 'bg-gray-100': day.outOfMonth }]">
                     <div class="relative self-start flex justify-center items-center">
-                        <span :class="['m-1 text-xs font-bold flex items-center justify-center', { 'bg-blue-500 text-white border-blue-500 border-2 rounded-full': isToday(day.date) }]" style="width: 24px; height: 24px;">
+                        <span :class="['m-1 text-xs font-bold flex items-center justify-center', { 'bg-gray-500 text-white border-gray-500 border-2 rounded-full': isToday(day.date) }]" style="width: 24px; height: 24px;">
                             {{ new Date(day.date).getDate() }}
                         </span>
                         <span v-if="isFirstDayOfMonth(day.date)" class="text-xs font-light">{{ getMonthName(day.date) }}</span>
                     </div>
-                    <div class="flex flex-col overflow-auto">
-                        <button v-for="event in day.events.sort((a, b) => a.time.localeCompare(b.time))" :key="event.id" @click="editEvent(event)" class="flex items-center flex-shrink-0 h-5 px-1 text-xs hover:bg-gray-200">
-                            <span :class="['flex-shrink-0 w-2 h-2 rounded-full', event.confirmed ? 'bg-blue-500' : 'border border-blue-500']"></span>
-                            <span class="ml-2 font-light leading-none">{{ event.time }}</span>
-                            <span class="ml-2 font-medium leading-none truncate">{{ event.title }}</span>
+                    <div class="flex flex-col overflow-auto -mt-0.5">
+                        <button
+                            v-for="event in day.events.filter(e => e).sort((a, b) => (a.time || '').localeCompare(b.time || ''))"
+                            :key="event.id"
+                            @click="editEvent(event)"
+                            :class="[
+                                'flex items-center mx-1 my-0.5 rounded-md flex-shrink-0 h-5 px-1 text-xs transition ease-in-out',
+                                event.time ? 'hover:bg-gray-200' : 'bg-blue-400 hover:bg-blue-500 text-white'
+                            ]"
+                        >
+                            <span
+                              v-if="event.time"
+                              :class="['flex-shrink-0 w-2 h-2 rounded-full', event.confirmed ? 'bg-blue-400' : 'border border-blue-400']">
+                            </span>
+                            <span v-if="event.time" class="ml-1 font-light leading-none">{{ event.time }}</span>
+                            <span :class="['font-medium leading-none truncate', { 'ml-1.5': event.time }]">{{ event.title }}</span>
+
                         </button>
                     </div>
-                    <button @click="openAddEventModal(day.date)" class="absolute top-1 right-0 items-center justify-center hidden w-6 h-6 mb-2 mr-2 text-white bg-blue-500 rounded group-hover:flex hover:bg-blue-400">
+                    <button @click="openAddEventModal(day.date)" class="absolute top-1.5 right-0 items-center justify-center hidden w-5 h-5 mr-1 text-white bg-blue-400 transition ease-in-out rounded-md group-hover:flex hover:bg-blue-500">
                         <svg viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6 plus">
                             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path>
                         </svg>
@@ -208,8 +220,3 @@ watch(isModalOpen, (newVal) => {
 
 </script>
 
-<style scoped>
-.bg-gray-100 {
-    color: #ccc;
-}
-</style>

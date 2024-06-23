@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Event;
@@ -22,7 +21,7 @@ class EventController extends Controller
     {
         $request->validate([
             'date' => 'required|date',
-            'time' => 'required',
+            'time' => 'nullable',
             'title' => 'required|string',
             'confirmed' => 'required|boolean',
         ]);
@@ -41,7 +40,7 @@ class EventController extends Controller
     {
         $request->validate([
             'date' => 'required|date',
-            'time' => 'required',
+            'time' => 'nullable',
             'title' => 'required|string',
             'confirmed' => 'required|boolean',
         ]);

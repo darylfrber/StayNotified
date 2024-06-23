@@ -7,11 +7,11 @@
             @click.stop
         >
             <div
-                class="flex justify-between px-3 py-3 mb-1 rounded-t-lg items-center cursor-move bg-blue-500 text-white"
+                class="flex justify-between px-2 py-1 mb-1 rounded-t-lg items-center cursor-move bg-gray-100"
                 @mousedown="dragStart"
             >
-                <h2 class="text-xl font-bold">{{ isEditMode ? 'Edit Event' : 'Add Event' }}</h2>
-                <button @click="closeModal" class="p-1 rounded-md hover:bg-blue-400 transition duration-200 ease-in-out">
+                <h2 class="text-lg font-medium">{{ isEditMode ? 'Edit Event' : 'Add Event' }}</h2>
+                <button @click="closeModal" class="p-1 rounded-md hover:bg-gray-200 transition duration-200 ease-in-out">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                     </svg>
@@ -19,35 +19,33 @@
             </div>
             <form class="px-3 py-2" @submit.prevent="submitEvent">
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                    <input type="text" v-model="form.title" class="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                    <input type="text" v-model="form.title" ref="titleInput" class="w-full px-3 py-2 border border-gray-300 rounded-md" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
                     <input type="date" v-model="form.date" class="w-full px-3 py-2 border border-gray-300 rounded-md" required />
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Time</label>
-                    <input type="time" v-model="form.time" class="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                    <input type="time" v-model="form.time" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
                 </div>
                 <div class="mb-4 flex gap-2 items-center">
-                    <input type="checkbox" v-model="form.confirmed" />
-                    <label class="block text-sm font-medium text-gray-700">Confirmed</label>
+                    <input type="checkbox" id="confirmed-event" v-model="form.confirmed" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" />
+                    <label for="confirmed-event" class="block text-sm font-medium text-gray-700">Confirmed</label>
                 </div>
                 <div class="flex justify-end">
-                    <button type="button" class="px-4 py-2 hover:bg-gray-200 transition rounded-md mr-2">More</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-500 transition hover:bg-blue-400 text-white rounded-md">{{ isEditMode ? 'Save' : 'Add' }}</button>
+                    <button type="button" class="px-5 py-1 hover:bg-gray-200 transition rounded-md mr-2">More</button>
+                    <button v-if="isEditMode" @click="deleteEvent" type="button" class="px-5 py-1 bg-red-500 text-white rounded-md mr-2">Delete</button>
+                    <button type="submit" class="px-5 py-1 bg-blue-500 transition hover:bg-blue-400 text-white rounded-md">{{ isEditMode ? 'Save' : 'Add' }}</button>
                 </div>
             </form>
-            <div v-if="isEditMode" class="flex justify-end mt-4">
-                <button @click="deleteEvent" class="px-4 py-2 bg-red-500 text-white rounded-md">Delete</button>
-            </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { reactive, watch, ref, onMounted, onBeforeUnmount } from 'vue';
+import { reactive, watch, ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { useNotification } from '@/composables/useNotification';
 
@@ -64,8 +62,13 @@ const form = reactive({
 const { showNotification } = useNotification();
 
 function submitEvent() {
+    const formData = {
+        ...form,
+        time: form.time || null,  // Ensure time is null if empty
+    };
+
     if (form.id) {
-        router.put(`/events/${form.id}`, form, {
+        router.put(`/events/${form.id}`, formData, {
             onSuccess: (page) => {
                 emit('event-updated', page.props.events);
                 showNotification('Event updated successfully!', 'success');
@@ -73,7 +76,7 @@ function submitEvent() {
             }
         });
     } else {
-        router.post('/events', form, {
+        router.post('/events', formData, {
             onSuccess: (page) => {
                 emit('event-updated', page.props.events);
                 showNotification('Event added successfully!', 'success');
@@ -110,7 +113,11 @@ watch(() => props.event, (newEvent) => {
 });
 
 watch(() => props.isOpen, (newIsOpen) => {
-    if (!newIsOpen) {
+    if (newIsOpen && !props.isEditMode) {
+        nextTick(() => {
+            titleInput.value.focus();
+        });
+    } else if (!newIsOpen) {
         form.offsetX = offsetX.value;
         form.offsetY = offsetY.value;
     }
@@ -121,6 +128,7 @@ function closeModal() {
 }
 
 const modal = ref(null);
+const titleInput = ref(null);
 const offsetX = ref(0);
 const offsetY = ref(0);
 let initialX = 0;

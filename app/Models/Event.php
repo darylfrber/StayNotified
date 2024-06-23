@@ -15,7 +15,7 @@ class Event extends Model
     ];
 
     protected $casts = [
-        'date' => 'date:Y-m-d', // Zorg ervoor dat date als datum wordt behandeld
+        'date' => 'date:Y-m-d',
         'confirmed' => 'boolean',
     ];
 }
