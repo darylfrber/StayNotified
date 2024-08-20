@@ -28,7 +28,7 @@
             <div class="grid flex-grow w-full h-full grid-cols-7 grid-rows-6 gap-px pt-px mt-1 bg-gray-200">
                 <div v-for="day in daysInMonth" :key="day.date" :class="['relative flex flex-col group h-20', { 'bg-white': !day.outOfMonth, 'bg-gray-100': day.outOfMonth }]">
                     <div class="relative self-start flex justify-center items-center">
-                        <span :class="['m-1 text-xs font-bold flex items-center justify-center', { 'bg-gray-500 text-white border-gray-500 border-2 rounded-full': isToday(day.date) }]" style="width: 24px; height: 24px;">
+                        <span :class="['m-1 text-xs font-bold flex items-center justify-center', { 'bg-blue-400 text-white border-blue-400 border-2 rounded-full': isToday(day.date) }]" style="width: 24px; height: 24px;">
                             {{ new Date(day.date).getDate() }}
                         </span>
                         <span v-if="isFirstDayOfMonth(day.date)" class="text-xs font-light">{{ getMonthName(day.date) }}</span>

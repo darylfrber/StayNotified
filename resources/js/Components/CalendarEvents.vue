@@ -34,10 +34,12 @@
                     <input type="checkbox" id="confirmed-event" v-model="form.confirmed" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" />
                     <label for="confirmed-event" class="block text-sm font-medium text-gray-700">Confirmed</label>
                 </div>
-                <div class="flex justify-end">
-                    <button type="button" class="px-5 py-1 hover:bg-gray-200 transition rounded-md mr-2">More</button>
-                    <button v-if="isEditMode" @click="deleteEvent" type="button" class="px-5 py-1 bg-red-500 text-white rounded-md mr-2">Delete</button>
-                    <button type="submit" class="px-5 py-1 bg-blue-500 transition hover:bg-blue-400 text-white rounded-md">{{ isEditMode ? 'Save' : 'Add' }}</button>
+                <div class="flex justify-between">
+                    <button v-if="isEditMode" @click="deleteEvent" type="button" class="px-5 py-1 bg-gray-100 hover:bg-gray-200 text-red-500 rounded-md mr-2">Delete</button>
+                    <div>
+                        <button type="button" class="px-5 py-1 bg-gray-100 hover:bg-gray-200 transition rounded-md mr-2">More</button>
+                        <button type="submit" class="px-5 py-1 bg-blue-400 transition hover:bg-blue-400 text-white rounded-md">{{ isEditMode ? 'Save' : 'Add' }}</button>
+                    </div>
                 </div>
             </form>
         </div>
