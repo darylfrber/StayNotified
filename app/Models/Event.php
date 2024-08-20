@@ -11,11 +11,17 @@ class Event extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date', 'time', 'title', 'confirmed',
+        'date', 'time', 'title', 'confirmed', 'user_id',
     ];
+
 
     protected $casts = [
         'date' => 'date:Y-m-d',
         'confirmed' => 'boolean',
     ];
+
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }
