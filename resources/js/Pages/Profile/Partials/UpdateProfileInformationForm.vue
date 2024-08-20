@@ -4,6 +4,8 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { useNotification } from '@/composables/useNotification';
+import { watch } from 'vue';
 
 defineProps({
     mustVerifyEmail: {
@@ -14,12 +16,32 @@ defineProps({
     },
 });
 
+const { showNotification } = useNotification();
+
 const user = usePage().props.auth.user;
 
 const form = useForm({
     name: user.name,
     email: user.email,
 });
+
+// Watch for the recentlySuccessful state and show a notification when it's true
+watch(() => form.recentlySuccessful, (newValue) => {
+    if (newValue) {
+        showNotification('Profile updated successfully!', 'success' );
+    }
+});
+
+const updateProfile = () => {
+    form.patch(route('profile.update'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showNotification('Profile updated successfully!', 'success');
+        },
+    });
+};
+
+
 </script>
 
 <template>
@@ -32,7 +54,7 @@ const form = useForm({
             </p>
         </header>
 
-        <form @submit.prevent="form.patch(route('profile.update'))" class="mt-6 space-y-6">
+        <form @submit.prevent="updateProfile" class="mt-6 space-y-6">
             <div>
                 <InputLabel for="name" value="Name" />
 
@@ -87,15 +109,6 @@ const form = useForm({
 
             <div class="flex items-center gap-4">
                 <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
-
-                <Transition
-                    enter-active-class="transition ease-in-out"
-                    enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
-                    leave-to-class="opacity-0"
-                >
-                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600">Saved.</p>
-                </Transition>
             </div>
         </form>
     </section>
