@@ -4,6 +4,11 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
+import Notification from "@/Components/Notification.vue";
+import {useNotification} from "@/composables/useNotification.js";
+
+const { notificationMessage, notificationType, notificationIcon, notificationVisible, hideNotification, pauseTimer, resumeTimer } = useNotification();
+
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -62,6 +67,14 @@ const showingNavigationDropdown = ref(false);
             <main>
                 <slot />
             </main>
+            <Notification
+                :message="notificationMessage"
+                :type="notificationType"
+                :icon="notificationIcon"
+                :visible="notificationVisible"
+                @hide="hideNotification"
+                :duration="3000"
+            />
         </div>
     </div>
 </template>

@@ -10,7 +10,7 @@ import Notification from '@/Components/Notification.vue';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
-const { notificationMessage, notificationType, notificationVisible, hideNotification, pauseTimer, resumeTimer } = useNotification();
+const { notificationMessage, notificationType, notificationIcon, notificationVisible, hideNotification, pauseTimer, resumeTimer } = useNotification();
 
 onMounted(() => {
     window.addEventListener('focus', resumeTimer);
@@ -98,6 +98,7 @@ onUnmounted(() => {
             <Notification
                 :message="notificationMessage"
                 :type="notificationType"
+                :icon="notificationIcon"
                 :visible="notificationVisible"
                 @hide="hideNotification"
                 :duration="3000"

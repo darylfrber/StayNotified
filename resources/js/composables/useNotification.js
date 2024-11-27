@@ -2,19 +2,22 @@ import { ref } from 'vue';
 
 const notificationMessage = ref('');
 const notificationType = ref('success');
+const notificationIcon = ref('check'); // Voeg een icon-ref toe
 const notificationVisible = ref(false);
 let timer = null;
 let remainingTime = 3000;
 let startTime = null;
 
 export function useNotification() {
-    function showNotification(message, type = 'success', duration = 3000) {
+    function showNotification(message, type = 'success', icon = 'check', duration = 3000) {
         notificationVisible.value = false;
         clearTimeout(timer);
         remainingTime = duration;
+
         setTimeout(() => {
             notificationMessage.value = message;
             notificationType.value = type;
+            notificationIcon.value = icon; // Stel het icoon in
             notificationVisible.value = true;
             startTime = Date.now();
             timer = setTimeout(() => {
@@ -47,6 +50,7 @@ export function useNotification() {
     return {
         notificationMessage,
         notificationType,
+        notificationIcon, // Exporteer de icon-ref
         notificationVisible,
         showNotification,
         hideNotification,
