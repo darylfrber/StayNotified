@@ -1,6 +1,6 @@
 <script setup>
 import Checkbox from '@/Components/Checkbox.vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
+import GuestNav from '@/Layouts/GuestNav.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -30,13 +30,17 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
+    <GuestNav>
         <Head title="Log in" />
 
         <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
             {{ status }}
         </div>
 
+        <div class=" flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
+            <div
+                class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg"
+            >
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="email" value="Email" />
@@ -90,5 +94,7 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
-    </GuestLayout>
+            </div>
+            </div>
+    </GuestNav>
 </template>
