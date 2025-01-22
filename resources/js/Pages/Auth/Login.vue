@@ -47,7 +47,7 @@ const submit = () => {
 
             <!-- Logo Section -->
             <div class="flex justify-center mb-8">
-                <ApplicationLogo class="w-16 h-16"/>
+                <Link href="/"><ApplicationLogo class="w-16 h-16"/></Link>
             </div>
 
             <!-- Social Login Options -->
@@ -177,9 +177,6 @@ const submit = () => {
             <p class="text-lg mb-4">
                 Stay organized and on top of your schedule. Manage your events, meetings, and appointments
                 seamlessly.
-            </p>
-            <p class="text-sm">
-                <strong>App Name:</strong> Calendar Pro
             </p>
         </div>
     </div>
