@@ -8,9 +8,6 @@ import { ArrowRightCircleIcon, ClockIcon, CalendarIcon } from "@heroicons/vue/24
 <template>
     <Head title="Home" />
     <GuestNav>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Home</h2>
-        </template>
         <!-- Hero Section -->
         <div class="bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 text-white py-20">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">

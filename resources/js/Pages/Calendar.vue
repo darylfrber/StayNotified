@@ -8,11 +8,7 @@ import { Head } from '@inertiajs/vue3';
     <Head title="Calendar" />
 
     <AuthenticatedNav>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Calendar</h2>
-        </template>
-
-        <div class="py-12 h-full">
+        <div class="p-12 h-full">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 h-full">
                 <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg h-full">
                     <Calendar/>
