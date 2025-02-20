@@ -4,6 +4,7 @@ import { Head } from '@inertiajs/vue3';
 import AuthenticatedNav from '@/Layouts/AuthenticatedNav.vue';
 import UserNotes from '@/Components/UserNotes.vue';
 import NoteEditor from '@/Components/NoteEditor.vue';
+import Calendar from "@/Pages/Calendar.vue";
 
 defineProps({ notes: Array});
 
@@ -35,9 +36,15 @@ const backToList = () => {
     <Head title="Notes"/>
 
     <AuthenticatedNav>
-        <div class="flex flex-col md:flex-row h-screen">
-            <UserNotes v-if="!selectedNote || !isMobile" :notes="notes" @select="selectNote"/>
-            <NoteEditor v-if="selectedNote" :note="selectedNote" @back="backToList"/>
+        <div class="h-full">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 h-full">
+                <div class="overflow-hidden h-full">
+                    <div class="flex flex-col md:flex-row h-screen">
+                        <UserNotes v-if="!selectedNote || !isMobile" :notes="notes" @select="selectNote"/>
+                        <NoteEditor v-if="selectedNote" :note="selectedNote" @back="backToList"/>
+                    </div>
+                </div>
+            </div>
         </div>
     </AuthenticatedNav>
 </template>
