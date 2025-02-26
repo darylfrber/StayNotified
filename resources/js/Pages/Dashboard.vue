@@ -1,9 +1,9 @@
 <script setup>
 import AuthenticatedNav from '@/Layouts/AuthenticatedNav.vue';
-import {Head, usePage} from '@inertiajs/vue3';
-import {computed} from 'vue';
+import { Head, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
-const {props} = usePage();
+const { props } = usePage();
 
 // Get sorted upcoming & today's events
 const sortEventsByTime = (events) => {
@@ -20,12 +20,38 @@ const todayEvents = computed(() => {
     return sortEventsByTime(props.events.filter(event => event.date === today));
 });
 
-// Get recent and most viewed notes
+// Notes
 const recentNotes = computed(() => [...props.notes].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)).slice(0, 3));
 const mostViewedNotes = computed(() => [...props.notes].sort((a, b) => b.views - a.views).slice(0, 3));
 
-// Get current month for mini calendar
-const currentMonth = new Date().toLocaleString('en-US', {month: 'long'});
+const today = new Date();
+const currentMonth = today.toLocaleString('en-US', { month: 'long' });
+const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+const daysInMonth = computed(() => {
+    const days = [];
+    const startDay = firstDay.getDay();
+    const totalDays = lastDay.getDate();
+
+    // Get previous month's days
+    const prevMonthLastDay = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+    for (let i = startDay - 1; i >= 0; i--) {
+        days.push({ day: prevMonthLastDay - i, disabled: true });
+    }
+
+    // Get current month's days
+    for (let i = 1; i <= totalDays; i++) {
+        days.push({ day: i, current: i === today.getDate(), hasEvent: props.events.some(e => new Date(e.date).getDate() === i) });
+    }
+
+    // Fill next month's days
+    while (days.length % 7 !== 0) {
+        days.push({ day: days.length - totalDays - startDay + 1, disabled: true });
+    }
+
+    return days;
+});
 </script>
 
 <template>
@@ -60,18 +86,25 @@ const currentMonth = new Date().toLocaleString('en-US', {month: 'long'});
 
                 <!-- 📅 Mini Calendar -->
                 <div class="bg-white shadow-lg rounded-2xl p-6">
-                    <h2 class="text-xl font-semibold text-center">{{ currentMonth }}</h2>
+                    <h2 class="text-xl font-semibold">{{ currentMonth }}</h2>
                     <div class="grid grid-cols-7 gap-1 text-center mt-4 text-gray-700">
-                        <span v-for="day in ['S', 'M', 'T', 'W', 'T', 'F', 'S']" :key="day" class="font-bold">{{
-                                day
-                            }}</span>
-                        <span v-for="n in 30" :key="n" class="p-2">{{ n }}</span>
+                        <span v-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="day" class="font-bold">{{ day }}</span>
+                        <span v-for="date in daysInMonth" :key="date.day"
+                              :class="[date.current ? 'bg-blue-500 !text-white' : 'hover:bg-gray-200',
+                       'p-3 aspect-w-1 aspect-h-1 rounded-full relative flex items-center justify-center',
+                       date.disabled ? 'text-gray-400' : 'text-black']">
+            <button @click="$inertia.visit('/calendar')" class="w-full h-full flex items-center justify-center">
+                {{ date.day }}
+                <span v-if="date.hasEvent" class="block w-2 h-2 bg-blue-500 rounded-full absolute bottom-0 left-1/2 transform -translate-x-1/2"></span>
+            </button>
+        </span>
                     </div>
-                    <button @click="$inertia.visit('/calendar')"
-                            class="mt-4 w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                    <button @click="$inertia.visit('/calendar')" class="mt-4 w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
                         View Full Calendar
                     </button>
                 </div>
+
+
 
                 <!-- 📆 Upcoming Events -->
                 <div class="bg-white shadow-lg rounded-2xl p-6">
@@ -81,9 +114,7 @@ const currentMonth = new Date().toLocaleString('en-US', {month: 'long'});
                              class="bg-gray-100 p-4 rounded-lg shadow-md flex items-center">
                             <div class="bg-blue-500 text-white p-3 rounded-lg text-center">
                                 <p class="text-xl font-bold">{{ new Date(event.date).getDate() }}</p>
-                                <p class="text-sm">{{
-                                        new Date(event.date).toLocaleString('en-US', {month: 'short'})
-                                    }}</p>
+                                <p class="text-sm">{{ new Date(event.date).toLocaleString('en-US', { month: 'short' }) }}</p>
                             </div>
                             <div class="ml-4">
                                 <h3 class="font-semibold text-lg">{{ event.title }}</h3>
