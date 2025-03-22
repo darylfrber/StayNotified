@@ -9,12 +9,12 @@
             <div class="flex gap-2 mb-2">
                 <button @click="editor.chain().focus().toggleBold().run()" class="bg-gray-200 px-2 py-1 rounded">B</button>
                 <input type="color" v-model="textColor" @input="updateTextColor" class="w-8 h-8 border rounded">
-                <select v-model="fontSize" @change="updateFontSize" class="border p-1 rounded">
-                    <option value="text-sm">Small</option>
-                    <option value="text-base">Normal</option>
-                    <option value="text-lg">Large</option>
-                    <option value="text-xl">Extra Large</option>
-                </select>
+<!--                <select v-model="fontSize" @change="updateFontSize" class="border p-1 rounded">-->
+<!--                    <option value="text-sm">Small</option>-->
+<!--                    <option value="text-base">Normal</option>-->
+<!--                    <option value="text-lg">Large</option>-->
+<!--                    <option value="text-xl">Extra Large</option>-->
+<!--                </select>-->
             </div>
             <EditorContent :editor="editor" class="prose max-w-none" />
         </div>

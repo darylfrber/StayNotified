@@ -76,7 +76,7 @@ class NotesController extends Controller
 
         // Retourneer een geldige Inertia respons met de bijgewerkte notitie
         return Inertia::render('UserNotes', [
-            'notes' => Note::all() // Of een andere methode om je notities op te halen
+            'notes' => Note::all()
         ]);
     }
 }

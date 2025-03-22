@@ -173,7 +173,7 @@ const submit = () => {
 
         <!-- Right Side: Calendar Info Section -->
         <div class="hidden sm:flex flex-col justify-center items-center bg-gradient-to-r from-blue-400 to-blue-600 text-white w-1/2 p-8">
-            <h1 class="text-4xl font-bold mb-4">Your Personal Calendar</h1>
+            <h1 class="text-4xl font-bold mb-4">Your Personal Agenda</h1>
             <p class="text-lg mb-4">
                 Stay organized and on top of your schedule. Manage your events, meetings, and appointments
                 seamlessly.

@@ -1,4 +1,3 @@
-<template>
     <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
         <!-- Bell icon -->
         <path d="M50 15C35 15 30 25 30 40V60L25 65V68H75V65L70 60V40C70 25 65 15 50 15Z" />
@@ -7,4 +6,3 @@
         <!-- Bottom curve -->
         <path d="M40 75C40 80 45 85 50 85C55 85 60 80 60 75" />
     </svg>
-</template>
