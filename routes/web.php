@@ -26,8 +26,8 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
-        'notes' => Note::latest()->get(),
-        'events' => Event::latest()->get(), // ✅ Events toevoegen
+        'notes' => Note::where('user_id', auth()->id())->latest()->get(),
+        'events' => Event::where('user_id', auth()->id())->latest()->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
