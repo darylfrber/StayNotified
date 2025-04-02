@@ -39,9 +39,13 @@
                             :key="event.id"
                             @click="editEvent(event)"
                             :class="[
-                                'flex items-center mx-1 my-0.5 rounded-md flex-shrink-0 h-5 px-1 text-xs transition ease-in-out',
-                                event.time ? 'hover:bg-gray-200' : 'bg-blue-400 hover:bg-blue-500 text-white'
-                            ]"
+        'flex items-center mx-1 my-0.5 rounded-md flex-shrink-0 h-5 px-1 text-xs transition ease-in-out',
+        event.time
+            ? 'hover:bg-gray-200'
+            : event.confirmed
+                ? 'bg-blue-400 hover:bg-blue-500 text-white'
+                : 'border border-blue-400 hover:bg-blue-50'
+    ]"
                         >
                             <span
                               v-if="event.time"

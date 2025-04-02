@@ -43,10 +43,6 @@ const selectedNoteId = ref(props.selectedNote?.id || null);
 const title = ref(props.selectedNote?.title || 'StayNotified: Notes');
 document.title = title.value;
 
-// Log de notities om te zien welke data we ontvangen
-console.log(props.notes);
-
-// Update de titel wanneer een notitie wordt geselecteerd
 const selectNote = (note) => {
     selectedNoteId.value = note.id;
     emit('select', note);
@@ -68,7 +64,6 @@ const deleteNote = (id) => {
 
 // Functie om de datum te formatteren
 const formatDate = (date) => {
-    console.log('Received date:', date); // Log de datum die we ontvangen
     if (!date) return 'No date provided';
     const d = new Date(date);
     if (isNaN(d.getTime())) return 'Invalid date';
