@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Note;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -20,7 +21,7 @@ class NotesController extends Controller
         ]);
     }
 
-    public function show(Note $note)
+    public function show(Note $note): Response
     {
         // Verhoog het aantal views bij het openen van een notitie
         $note->increment('views');
@@ -30,24 +31,24 @@ class NotesController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
         ]);
 
-        $note = Note::create([
+        Note::create([
             'user_id' => $request->user()->id,
             'title' => $request->title,
             'content' => $request->content,
             'last_edited_at' => now(),
         ]);
 
-        return redirect()->route('notes.index');
+        return back();
     }
 
-    public function update(Request $request, Note $note)
+    public function update(Request $request, Note $note): RedirectResponse
     {
         $request->validate([
             'title' => 'required|string|max:255',
@@ -60,23 +61,12 @@ class NotesController extends Controller
             'last_edited_at' => now(),
         ]);
 
-        return redirect()->route('notes.index');
+        return back();
     }
 
-    public function destroy(Note $note)
+    public function destroy(Note $note): RedirectResponse
     {
         $note->delete();
-        return redirect()->route('notes.index');
-    }
-
-    public function incrementViews(Note $note)
-    {
-        // Verhoog het aantal views
-        $note->increment('views');
-
-        // Retourneer een geldige Inertia respons met de bijgewerkte notitie
-        return Inertia::render('UserNotes', [
-            'notes' => Note::all()
-        ]);
+        return back();
     }
 }

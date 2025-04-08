@@ -19,7 +19,7 @@ class EventTest extends TestCase
         Event::factory()->count(2)->create(['user_id' => $user->id]);
 
         $this->actingAs($user)
-            ->get(route('calendar.index'))
+            ->get(route('events.show'))
             ->assertStatus(200)
             ->assertInertia(fn (Assert $page) =>
             $page->component('Calendar')

@@ -10,6 +10,27 @@ use Inertia\Response;
 
 class EventController extends Controller
 {
+    public function show(Request $request): Response
+    {
+        // Haal alleen de events op die behoren tot de ingelogde gebruiker
+        $events = Event::where('user_id', $request->user()->id)
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'date' => $event->date->format('Y-m-d'),
+                    'time' => $event->time,
+                    'title' => $event->title,
+                    'user_id' => $event->user_id,
+                    'confirmed' => $event->confirmed,
+                ];
+            });
+
+        return Inertia::render('Calendar', [
+            'events' => $events,
+        ]);
+    }
+
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->validate([
@@ -28,7 +49,7 @@ class EventController extends Controller
             'confirmed' => $request->confirmed,
         ]);
 
-        return back()->with('event', $event);
+        return back();
     }
 
 
@@ -41,7 +62,7 @@ class EventController extends Controller
 
         $event->update($request->all());
 
-        return back()->with('event', $event);
+        return back();
     }
 
 
@@ -54,7 +75,7 @@ class EventController extends Controller
 
         $event->delete();
 
-        return back()->with('event', $event);
+        return back();
     }
 
 }

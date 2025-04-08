@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
 
 
     // Calendar
-    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+    Route::get('/calendar', [EventController::class, 'show'])->name('events.show');
     Route::post('/events', [EventController::class, 'store'])->name('events.store');
     Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
     Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
@@ -48,7 +48,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/notes', [NotesController::class, 'index'])->name('notes.index');
     Route::get('/notes/{note}', [NotesController::class, 'show'])->name('notes.show');
     Route::post('/notes', [NotesController::class, 'store'])->name('notes.store');
-    Route::post('/notes/{note}/increment-views', [NotesController::class, 'incrementViews'])->name('notes.views');
     Route::put('/notes/{note}', [NotesController::class, 'update'])->name('notes.update');
     Route::delete('/notes/{note}', [NotesController::class, 'destroy'])->name('notes.destroy');
 

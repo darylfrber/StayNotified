@@ -11,34 +11,46 @@
                 @mousedown="dragStart"
             >
                 <h2 class="text-lg font-medium">{{ isEditMode ? 'Edit Event' : 'Add Event' }}</h2>
-                <button @click="closeModal" class="p-1 rounded-md hover:bg-gray-200 transition duration-200 ease-in-out">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                <button @click="closeModal"
+                        class="p-1 rounded-md hover:bg-gray-200 transition duration-200 ease-in-out">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                         stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
             <form class="px-3 py-2" @submit.prevent="submitEvent">
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                    <input type="text" v-model="form.title" ref="titleInput" class="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                    <input type="text" v-model="form.title" ref="titleInput"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md" required/>
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                    <input type="date" v-model="form.date" class="w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                    <input type="date" v-model="form.date" class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                           required/>
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Time</label>
-                    <input type="time" v-model="form.time" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                    <input type="time" v-model="form.time" class="w-full px-3 py-2 border border-gray-300 rounded-md"/>
                 </div>
                 <div class="mb-4 flex gap-2 items-center">
-                    <input type="checkbox" id="confirmed-event" v-model="form.confirmed" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" />
+                    <input type="checkbox" id="confirmed-event" v-model="form.confirmed" checked
+                           class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"/>
                     <label for="confirmed-event" class="block text-sm font-medium text-gray-700">Confirmed</label>
                 </div>
                 <div class="flex justify-between">
-                    <button v-if="isEditMode" @click="deleteEvent" type="button" class="px-5 py-1 bg-gray-100 hover:bg-gray-200 text-red-500 rounded-md mr-2">Delete</button>
+                    <button v-if="isEditMode" @click="deleteEvent" type="button"
+                            class="px-5 py-1 bg-gray-100 hover:bg-gray-200 text-red-500 rounded-md mr-2">Delete
+                    </button>
                     <div>
-                        <button type="button" class="px-5 py-1 bg-gray-100 hover:bg-gray-200 transition rounded-md mr-2">More</button>
-                        <button type="submit" class="px-5 py-1 bg-blue-400 transition hover:bg-blue-400 text-white rounded-md">{{ isEditMode ? 'Save' : 'Add' }}</button>
+                        <button type="button"
+                                class="px-5 py-1 bg-gray-100 hover:bg-gray-200 transition rounded-md mr-2">More
+                        </button>
+                        <button type="submit"
+                                class="px-5 py-1 bg-blue-400 transition hover:bg-blue-400 text-white rounded-md">
+                            {{ isEditMode ? 'Save' : 'Add' }}
+                        </button>
                     </div>
                 </div>
             </form>
@@ -47,9 +59,9 @@
 </template>
 
 <script setup>
-import { reactive, watch, ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
-import { router } from '@inertiajs/vue3';
-import { useNotification } from '@/composables/useNotification';
+import {reactive, watch, ref, onMounted, onBeforeUnmount, nextTick} from 'vue';
+import {router} from '@inertiajs/vue3';
+import {useNotification} from '@/composables/useNotification';
 
 const form = reactive({
     id: null,
@@ -61,23 +73,15 @@ const form = reactive({
     offsetY: 0,
 });
 
-const { showNotification } = useNotification();
+const {showNotification} = useNotification();
 
-function submitEvent() {
+const submitEvent = () => {
     const formData = {
         ...form,
         time: form.time || null,  // Ensure time is null if empty
     };
 
-    if (form.id) {
-        router.put(`/events/${form.id}`, formData, {
-            onSuccess: (page) => {
-                emit('event-updated', page.props.events);
-                showNotification('Event updated successfully!', 'success');
-                closeModal();
-            }
-        });
-    } else {
+    if (!form.id) {
         router.post('/events', formData, {
             onSuccess: (page) => {
                 emit('event-updated', page.props.events);
@@ -85,7 +89,16 @@ function submitEvent() {
                 closeModal();
             }
         });
+        return;
     }
+
+    router.put(`/events/${form.id}`, formData, {
+        onSuccess: (page) => {
+            emit('event-updated', page.props.events);
+            showNotification('Event updated successfully!', 'success');
+            closeModal();
+        }
+    });
 }
 
 function deleteEvent() {

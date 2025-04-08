@@ -37,7 +37,7 @@ onUnmounted(() => {
                             </div>
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">Dashboard</NavLink>
-                                <NavLink :href="route('calendar.index')" :active="route().current('calendar.index')">Calendar</NavLink>
+                                <NavLink :href="route('events.show')" :active="route().current('events.show')">Calendar</NavLink>
                                 <NavLink :href="route('notes.index')" :active="route().current('notes.index')">Notes</NavLink>
                             </div>
                         </div>
@@ -74,7 +74,7 @@ onUnmounted(() => {
                 <div :class="{ 'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown }" class="sm:hidden">
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">Dashboard</ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('calendar.index')" :active="route().current('calendar.index')">Calendar</ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('events.show')" :active="route().current('events.show')">Calendar</ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('notes.index')" :active="route().current('notes.index')">Notes</ResponsiveNavLink>
                     </div>
                     <div class="pt-4 pb-1 border-t border-gray-200">
